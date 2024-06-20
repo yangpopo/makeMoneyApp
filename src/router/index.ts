@@ -7,7 +7,7 @@ const router = createRouter({
       path: '/',
       name: 'inletPage',
       // redirect: '/important/campus', // 重定向
-      redirect: '/userAccount/logon', // 重定向
+      redirect: '/important/campus', // 重定向
       // @ts-ignore
       component: () => import('@/views/inletPage/inletPage.vue'),
       children:[]
@@ -166,6 +166,13 @@ const router = createRouter({
       component: () => import('@/views/privacyPolicy/privacyPolicyDetails.vue'),
       children:[]
     },
+    /* 检查更新 */
+    {
+      path: '/checkUpdates',
+      name: 'checkUpdates',
+      // @ts-ignore
+      component: () => import('@/views/checkUpdates/checkUpdates.vue'),
+    },
     /* 个人资料 */
     {
       path: '/userInfo',
@@ -265,7 +272,87 @@ const router = createRouter({
       component: () => import('@/views/search/index.vue'),
       children:[]
     },
+    // /* 广告有关 */
+    // {
+    //   path: '/ad',
+    //   name: 'ad',
+    //   redirect: '/ad/index', // 重定向
+    //   // @ts-ignore
+    //   component: () => import('@/views/entrance.vue'),
+    //   children:[{
+    //     /* 广告列表 */
+    //     path: 'index',
+    //     name: 'adListIndex',
+    //     // @ts-ignore
+    //     component: () => import('@/views/ad/index.vue'),
+    //   }, {
+    //     /* 广告详情 */
+    //     path: 'adDetails',
+    //     name: 'adDetails',
+    //     // @ts-ignore
+    //     component: () => import('@/views/ad/adDetails.vue'),
+    //   }]
+    // },
+    /* 大课堂有关 */
+    {
+      path: '/bigEducation',
+      name: 'bigEducation',
+      redirect: '/bigEducation/index', // 重定向
+      // @ts-ignore
+      component: () => import('@/views/entrance.vue'),
+      children:[{
+        /* 大课堂 */
+        path: 'index',
+        name: 'bigEducationIndex',
+        // @ts-ignore
+        component: () => import('@/views/bigEducation/index.vue'),
+      }, {
+        /* 课堂列表 */
+        path: 'educationList',
+        name: 'educationList',
+        // @ts-ignore
+        component: () => import('@/views/bigEducation/educationList.vue'),
+      }, {
+        /* 课堂收藏夹 */
+        path: 'educationFavorite',
+        name: 'educationFavorite',
+        // @ts-ignore
+        component: () => import('@/views/bigEducation/educationFavorite.vue'),
+      }, {
+        /* 课堂明细 */
+        path: 'educationDetail',
+        name: 'educationDetail',
+        // @ts-ignore
+        component: () => import('@/views/bigEducation/educationDetail.vue'),
+      }]
+    },
+    /* 操作指南 */
+    {
+      path: '/instructions',
+      name: 'instructions',
+      redirect: '/instructions/index', // 重定向
+      // @ts-ignore
+      component: () => import('@/views/entrance.vue'),
+      children:[{
+        /* 操作指南 */
+        path: 'index',
+        name: 'instructionsIndex',
+        // @ts-ignore
+        component: () => import('@/views/instructions/index.vue'),
+      }]
+    },
   ]
 })
+
+// 路由守卫
+router.beforeEach(async (to: any, from: any) => {
+  const token = localStorage.getItem("token") || '';
+  // 检查用户是否已登录
+  if (!token && (to.name !== 'myPage' && to.name !== 'logon' && to.name !== 'register' && to.name !== 'retrievePassword') ) {
+    // 将用户重定向到登录页面
+    return { name: 'myPage' }
+  }
+})
+
 
 export default router

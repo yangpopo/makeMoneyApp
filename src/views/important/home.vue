@@ -2,25 +2,25 @@
   <div class="home">
     <div class="head-box">
       <swipe class="ad-swipe" :autoplay="3000" indicator-color="white">
-        <swipe-item>1</swipe-item>
-        <swipe-item>2</swipe-item>
-        <swipe-item>3</swipe-item>
-        <swipe-item>4</swipe-item>
+        <swipe-item><img class="swipe-cover" src="@/assets/image/home/001.png" alt="" /></swipe-item>
+        <swipe-item><img class="swipe-cover" src="@/assets/image/home/002.png" alt="" /></swipe-item>
+        <swipe-item><img class="swipe-cover" src="@/assets/image/home/003.png" alt="" /></swipe-item>
+        <swipe-item><img class="swipe-cover" src="@/assets/image/home/004.png" alt="" /></swipe-item>
       </swipe>
       <div class="notice-box">
         <div class="title-h1">公告</div>
         <swipe class="notice" :autoplay="3000" vertical :show-indicators="false">
           <swipe-item>
-            <div class="swipe-item-box">11111asdfasdfsadf asdfasdf asdfasdf asdf</div>
+            <div class="swipe-item-box"></div>
           </swipe-item>
           <swipe-item>
-            <div class="swipe-item-box">22222asdfasdfsadf asdfasdf asdfasdf asdf</div>
+            <div class="swipe-item-box"></div>
           </swipe-item>
           <swipe-item>
-            <div class="swipe-item-box">33333asdfasdfsadf asdfasdf asdfasdf asdf</div>
+            <div class="swipe-item-box"></div>
           </swipe-item>
           <swipe-item>
-            <div class="swipe-item-box">44444asdfasdfsadf asdfasdf asdfasdf asdf</div>
+            <div class="swipe-item-box"></div>
           </swipe-item>
         </swipe>
       </div>
@@ -29,10 +29,10 @@
           <dt><img src="@/assets/image/home/icon-task.png" alt=""></dt>
           <dd>广告任务</dd>
         </dl>
-        <dl class="item">
+        <!-- <dl class="item">
           <dt><img src="@/assets/image/home/icon-mall.png" alt=""></dt>
           <dd>优选商城</dd>
-        </dl>
+        </dl> -->
         <dl class="item">
           <dt><img src="@/assets/image/home/icon-study.png" alt=""></dt>
           <dd>学习强国</dd>
@@ -42,17 +42,28 @@
     <div class="sell-box">
       <div class="title-h1">热门推荐</div>
       <div class="sell-item">
-        <RouterLink to="/" class="classroom-item">
+        <div class="classroom-item">
+          <img class="icon-item" src="@/assets/image/home/classroom.png" alt="">
+        </div>
+        <div class="two-layers">
+          <div to="/" class="help-item">
+            <img class="icon-item" src="@/assets/image/home/help.png" alt="">
+          </div>
+          <div to="/" class="tutorial-item">
+            <img class="icon-item" src="@/assets/image/home/tutorial.png" alt="">
+          </div>
+        </div>
+        <!-- <RouterLink :to="{ name: 'bigEducation' }" class="classroom-item">
           <img class="icon-item" src="@/assets/image/home/classroom.png" alt="">
         </RouterLink>
         <div class="two-layers">
-          <RouterLink to="/" class="help-item">
+          <RouterLink :to="{ name: 'instructions' }" class="help-item">
             <img class="icon-item" src="@/assets/image/home/help.png" alt="">
           </RouterLink>
           <RouterLink to="/" class="tutorial-item">
             <img class="icon-item" src="@/assets/image/home/tutorial.png" alt="">
           </RouterLink>
-        </div>
+        </div> -->
       </div>
     </div>
     
@@ -89,10 +100,14 @@ const skiPage = (name: string):void => {
     margin-bottom: 5vw;
     .ad-swipe {
       width: 100%;
-      background-color: aqua;
       border-radius: 3vw;
-      height: 50vw;
+      height: 40vw;
       margin-bottom: 5vw;
+      .swipe-cover {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
     }
     .notice-box{
       width: 100%;
@@ -130,7 +145,7 @@ const skiPage = (name: string):void => {
     .item-box {
       width: 100%;
       display: flex;
-      justify-content: space-between;
+      justify-content: space-around;
       align-items: center;
       .item {
         width: 20%;

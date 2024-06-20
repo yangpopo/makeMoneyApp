@@ -8,6 +8,12 @@ import vueJsx from '@vitejs/plugin-vue-jsx'
 export default defineConfig({
   server: {
     host: '0.0.0.0',
+    // proxy: {
+    //   '/api': {
+    //     target: 'http://43.132.146.172/ete/api.php/', // 目标服务器地址
+    //     changeOrigin: true, // 是否改变源地址
+    //   }
+    // }
   },
   plugins: [
     vue(),
@@ -20,5 +26,5 @@ export default defineConfig({
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
-  }
+  },
 })

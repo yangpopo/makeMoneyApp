@@ -62,7 +62,7 @@ export default { name: 'callCenter' }
 import navBox from '@/components/navBox.vue';
 import popupBox from '@/components/popupBox.vue';
 
-import { NavBar, Icon as vanIcon, showToast, Tab as vanTab, Tabs as vanTabs, PullRefresh, List, Checkbox as vanCheckbox } from 'vant';
+import { NavBar, Icon as vanIcon, showToast, showSuccessToast, Tab as vanTab, Tabs as vanTabs, PullRefresh, List, Checkbox as vanCheckbox } from 'vant';
 
 
 // @ts-ignore
@@ -95,7 +95,7 @@ const coupons = reactive([{
 const refreshState = ref(false); // 加载状态
 const onRefresh = () => {
   setTimeout(() => {
-    showToast('刷新成功');
+    showSuccessToast('刷新成功');
     refreshState.value = false;
   }, 1000);
 };
@@ -104,7 +104,7 @@ const loadingState = ref(false); // 加载状态
 const isFinished = ref(true); // 是否加载完成
 const onLoad = () => {
   setTimeout(() => {
-    showToast('加载成功');
+    // showToast('加载成功');
     loadingState.value = false;
   }, 1000);
 };

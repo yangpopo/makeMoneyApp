@@ -1,0 +1,1 @@
+import{i as n}from"./axios-DLOumnlT.js";const r=o=>n({method:"post",url:"login/index",data:o}),s=o=>n({method:"post",url:"user/changeInfo",data:o}),t=o=>n({method:"post",url:"user/changePW",data:o});export{t as a,s as c,r as l};

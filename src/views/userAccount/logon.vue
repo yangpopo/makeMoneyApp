@@ -1,12 +1,12 @@
 <template>
   <div class="logon">
-    <div class="title-h1">欢迎使用DATER</div>
+    <div class="title-h1">欢迎使用易赚</div>
     <div class="phone input-box">
       <!-- <div class="code">+86</div> -->
       <input class="input-obj" v-model="logoData.username" maxlength="25" placeholder="请输入登录账号" type="text" >
     </div>
     <div class="password input-box">
-      <input class="input-obj" v-model="logoData.password" maxlength="20" type="password" placeholder="请输入登录密码">
+      <input class="input-obj" v-model="logoData.password" maxlength="16" type="password" placeholder="请输入登录密码">
       <RouterLink :to="{ name: 'retrievePassword' }" class="button">忘记密码?</RouterLink>
     </div>
     <div class="more-box">
@@ -29,25 +29,46 @@ export default {
 <script setup lang="ts">
 import { logon } from '@/api/userAccount'
 import { ref, reactive, onMounted } from 'vue';
-import { NumberKeyboard as vanNumberKeyboard, showToast } from 'vant';
+import { showToast } from 'vant';
+import { useUserInfo } from '@/stores/userInfo'
 // @ts-ignore
-import { RouterLink, RouterView, useRouter} from 'vue-router';
+import { RouterLink, useRoute, useRouter} from 'vue-router';
+import { resIndex } from '@/api/getResource';
+import { earningsRecord, taskRecord } from '@/api/ad';
 
+import { useMoneyIntegral } from '@/stores/moneyIntegral';
+
+/* 钱信息 */
+const moneyIntegralData = useMoneyIntegral();
+
+const route = useRoute(); // 路由参数
 const router = useRouter(); // 路由对象
 
 /* 跳转页面 */
 const skiPage = (name: string):void => {
-  router.push({name})
+  router.replace({name})
 }
 
 /* 登录数据 */
 let logoData = reactive({
+  // username: 'test',
+  // password: '123456',
   username: '',
   password: '',
 });
 
 
-/* 提交登录 */
+/* 初始化用户信息 */
+const userInfoPinia = useUserInfo()
+/* 如果已经登录了,就跳转首页 */
+if (userInfoPinia.token) {
+  skiPage('important')
+}
+
+
+/**
+ * 提交登录
+*/
 const submitLogin = () => {
   /* 验证登录账号 */
   if (logoData.username.length <= 0) {
@@ -60,16 +81,47 @@ const submitLogin = () => {
     showToast('请输入登录密码!')
     return
   }
-  logon(logoData).then(() => {
+  logon(logoData).then((res:any) => {
+    if (res.code == 0) {
+      userInfoPinia.updateToken(res.data.token);
+      userInfoPinia.updateUserInfo(res.data.user_info);
 
+      /* 初始化钱和积分 */
+      resIndex().then((res: any) => {
+        if (res.code == 0) {
+          moneyIntegralData.money = res.data.money;
+          moneyIntegralData.score = res.data.score;
+        }
+      })
+      
+      // 获取收益记录
+      earningsRecord().then((res:any) => {
+        if (res.code == 0){
+          Object.assign(moneyIntegralData.earningsRecordData, res.data);
+        }
+      })
+
+      // 获取任务进度
+      taskRecord().then((res:any) => {
+        if (res.code == 0){
+          Object.assign(moneyIntegralData.taskRecordData, res.data);
+        }
+      })
+
+      // 登录成功调整页面
+      if (route.query.parentName) {
+        skiPage(route.query.parentName.toString()); // 跳转
+      } else {
+        skiPage('important'); // 跳转主页
+      }
+    }
   })
-  
 }
 
 
-onMounted(() => {
-  logon(logoData)
-})
+// onMounted(() => {
+//   logon(logoData)
+// })
 </script>
 
 <style lang="scss" scoped>
@@ -79,8 +131,8 @@ onMounted(() => {
   background-image: url("@/assets/image/logon/bg.png");
   background-size: 100% auto;
   background-position: top;
-  box-sizing: border-box;
   padding: 30vw 12vw 0 12vw;
+  box-sizing: border-box;
   .title-h1 {
     width: 100%;
     text-align: center;

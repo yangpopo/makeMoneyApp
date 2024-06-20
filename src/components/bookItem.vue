@@ -1,11 +1,11 @@
 <template>
   <!-- 书籍项 -->
   <div class="book-item" @click="skiPage('commodityDetail')">
-    <VanImage class="book-cover" width="26vw" height="34vw" radius="8" fit="cover" position="center" src="https://fastly.jsdelivr.net/npm/@vant/assets/cat.jpeg" />
+    <VanImage class="book-cover" width="26vw" height="34vw" radius="8" fit="cover" position="center" :src="props.bookData.cover" />
     <dl class="describe-info">
-      <dt>遮天</dt>
-      <dd>阿萨德发空间爱上的看法婚纱店官方还可能是打回访啥地方的说法是打发斯蒂芬阿萨德发空间爱上的看法婚纱店官方还可能是打回访啥地方的说法是打发斯蒂芬</dd>
-      <dd>作者:哈哈哈</dd>
+      <dt>{{ props.bookData.title }}</dt>
+      <dd>{{ props.bookData.synopsis }}</dd>
+      <dd>作者:{{ props.bookData.author }}</dd>
     </dl>
   </div>
 </template>
@@ -20,16 +20,20 @@ export default {
 // @ts-ignore
 import { Image as VanImage, showToast } from 'vant';
 // @ts-ignore
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router';
+
+const props = defineProps(['bookData'])
 
 const router = useRouter(); /* 路由对象 */
 
 /* 跳转页面 */
 const skiPage = (name: string):void => {
-  router.push({name})
+  router.push({name, query: {id: props.bookData.id}})
 }
-
+onMounted(() => {
+  
+})
 </script>
 
 <style lang="scss" scoped>

@@ -19,8 +19,6 @@
           <van-icon name="arrow" size="20" color="#b4b4b4" />
         </div>
       </div>
-
-
     </div>
   </div>
 </template>

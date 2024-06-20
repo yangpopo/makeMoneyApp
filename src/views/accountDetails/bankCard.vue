@@ -36,7 +36,7 @@
           </van-field>
           <van-field name="password" label="密码" placeholder="请填写登录密码" :error-message="errorInfoPassword">
             <template #input>
-              <input v-model="creditCardData.password" :type="isShowPassword ? 'text' : 'password'" class="login-password" placeholder="请填写登录密码" maxlength="20" />
+              <input v-model="creditCardData.password" :type="isShowPassword ? 'text' : 'password'" class="login-password" placeholder="请填写登录密码" maxlength="16" />
               <van-icon v-if="!isShowPassword" class="eye-icon" name="eye-o" size="18" color="#000" @click="isShowPassword = true" />
               <van-icon v-else class="eye-icon" name="closed-eye" size="18" color="#000" @click="isShowPassword = false" />
             </template>

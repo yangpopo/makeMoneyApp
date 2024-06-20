@@ -1,6 +1,6 @@
 <template>
   <div class="register">
-    <div class="title-h1">欢迎使用DATER</div>
+    <div class="title-h1">欢迎使用易赚</div>
     <div class="phone input-box">
       <!-- <div class="code">+86</div> -->
       <input class="input-obj" v-model="accountData.phone" maxlength="11" readonly placeholder="请输入登录账号" type="text" @click="isShowNumberKeyboard = true">
@@ -14,7 +14,7 @@
       <div class="count-down" v-else>{{ codeState.countDown }}s</div>
     </div>
     <div class="password input-box">
-      <input class="input-obj" v-model="accountData.password" maxlength="20" :type="isShowPassword ? 'password' : 'text'" placeholder="设置密码登录" >
+      <input class="input-obj" v-model="accountData.password" maxlength="16" :type="isShowPassword ? 'password' : 'text'" placeholder="设置密码登录" >
       <van-icon v-if="isShowPassword == false" name="eye-o" color="#0034ef" size="6vw" @click="isShowPassword = true"/>
       <van-icon v-else name="closed-eye" color="#0034ef" size="6vw" @click="isShowPassword = false"/>
     </div>

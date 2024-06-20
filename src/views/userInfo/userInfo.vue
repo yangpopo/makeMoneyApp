@@ -7,15 +7,15 @@
     <div class="container-box">
       <h1 class="title-h1">基本资料</h1>
       <vanCellGroup class="cell-box">
-        <vanCell title="昵称" value="asdfasd" @click="isShowNickname = true"/>
-        <vanCell title="性别" value="男" is-link @click="isShowSex = true"/>
-        <vanCell title="年龄" value="20~30" is-link @click="agePopupRef.isShow = true"/>
+        <vanCell title="昵称" :value="modifyUserData.user_name" @click="isShowNickname = true"/>
+        <vanCell title="性别" :value="modifyUserData.sex == 0 ? '女' : '男'" is-link @click="isShowSex = true"/>
+        <vanCell title="年龄" :value="ageIndexKey[modifyUserData.age].text" is-link @click="agePopupRef.isShow = true"/>
       </vanCellGroup>
       <div class="save-but" @click="submitUserInfo">保存</div>
     </div>
 
     <vanDialog :show="isShowNickname" title="修改昵称" show-cancel-button @cancel="isShowNickname = false" @confirm="modifyNicknameConfirm">
-      <vanField label="昵称" placeholder="请输入昵称" />
+      <vanField v-model="modifyUserData.user_name" label="昵称" placeholder="请输入昵称" />
     </vanDialog>
     <!-- 性别 -->
     <van-action-sheet teleport="body" v-model:show="isShowSex" :actions="setSexData" @select="selectSetSex" cancel-text="取消" />
@@ -39,7 +39,29 @@ import { NavBar, Icon as vanIcon, showToast, CellGroup as vanCellGroup,  Cell as
 
 // @ts-ignore
 import { ref, reactive } from 'vue';
+import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router';
+import { useUserInfo } from '@/stores/userInfo';
+
+import { changeInfo } from '@/api/userAccount';
+
+
+const userInfoData = useUserInfo()
+const { userInfo, ageIndexKey } = storeToRefs(userInfoData);
+
+console.log(ageIndexKey.value, '*-*---*-*-*');
+
+/**
+ * 修改用用户数据
+*/
+const modifyUserData = reactive({
+  user_name: userInfo.value.username,
+  sex: userInfo.value.sex,
+  age: userInfo.value.age
+})
+
+
+
 
 /* 返回上一页面 */
 const pageReturn = ():void => {
@@ -56,7 +78,6 @@ const skiPage = (name: string):void => {
 /* 昵称弹窗 */
 let isShowNickname = ref(false);
 const modifyNicknameConfirm = () => {
-  console.log('完成昵称修改');
   isShowNickname.value = false;
 }
 
@@ -64,26 +85,40 @@ const modifyNicknameConfirm = () => {
 let isShowSex = ref(false);
 const setSexData = reactive([
   { name: '男', value: 1 },
-  { name: '女', value: 2 },
+  { name: '女', value: 0 },
 ])
 const selectSetSex = (data: any): void => {
-  console.log(data);
+  modifyUserData.sex = data.value;
   isShowSex.value = false;
 }
 
 /* 年龄弹窗 */
 const agePopupRef = ref(); // 年龄弹窗
-const setAgeDate = ref([
-  { text: '15~20', value: '15~20' },
-  { text: '21~30', value: '21~30' },
-])
+const setAgeDate = reactive(ageIndexKey.value);
+/**
+ * 年龄确定
+ * @param data 选中数据
+*/
 const ageConfirm = (data:any): void => {
-  console.log(data, '-*-*-*-');
+  modifyUserData.age = data.selectedValues[0];
+  agePopupRef.value.isShow = false
 }
 
 /* 提交用户信息 */
 const submitUserInfo = () => {
-  pageReturn();
+  changeInfo(modifyUserData).then((res:any) => {
+    if (res.code == 0) {
+      showToast('修改成功')
+      userInfoData.updateUserInfo({
+        username: modifyUserData.user_name,
+        sex: modifyUserData.sex,
+        age: modifyUserData.age,
+        user_acc: userInfo.value.user_acc,
+      })
+      pageReturn();
+    }
+  })
+  
 }
 
 

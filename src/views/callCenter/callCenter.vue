@@ -49,7 +49,7 @@ export default {
 
 <script setup lang="ts">
 import navBox from '@/components/navBox.vue';
-import { NavBar, Icon as vanIcon, showToast, Cell as vanCell } from 'vant';
+import { NavBar, Icon as vanIcon, showToast, showSuccessToast, Cell as vanCell } from 'vant';
 // @ts-ignore
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
@@ -70,7 +70,7 @@ const skiPage = (name: string):void => {
 const refreshState = ref(false); // 加载状态
 const onRefresh = () => {
   setTimeout(() => {
-    showToast('刷新成功');
+    showSuccessToast('刷新成功');
     refreshState.value = false;
   }, 1000);
 };
@@ -79,7 +79,7 @@ const loadingState = ref(false); // 加载状态
 const isFinished = ref(true); // 是否加载完成
 const onLoad = () => {
   setTimeout(() => {
-    showToast('加载成功');
+    // showToast('加载成功');
     loadingState.value = false;
   }, 1000);
 };

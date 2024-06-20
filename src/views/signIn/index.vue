@@ -7,18 +7,18 @@
     <div class="container-box">
       <div class="head-box">
         <div class="total-info">
-          <div class="val"><b>6.00</b>积分</div>
+          <div class="val"><b>{{ addWeekIntegral }}.00</b>积分</div>
           <img class="signin-but" src="@/assets/image/signIn/signIn-but.png" alt="" @click="fulfilSignIn">
         </div>
         <img class="icon" src="@/assets/image/signIn/icon.png" alt="">
       </div>
       <div class="calendar-box">
-        <div class="tilte-h1">已连续签到2天</div>
+        <div class="tilte-h1">已连续签到{{ continuityDayQuantity }}天</div>
         <div class="calendar">
-          <dl class="record-item" :class="{'is-fulfil': date.finishState}" v-for="date in dateData" :key="date.week">
+          <dl class="record-item" :class="{'is-fulfil': date.score}" v-for="date in dateData" :key="date.week">
             <dt>
-              <span class="val">{{ date.val }}</span>
-              <span class="date" v-if="!date.finishState">{{ date.date }}</span>
+              <span class="val">{{ date.score > 0 ? '+' + date.score : 0 }}</span>
+              <span class="date" v-if="!date.score">{{ date.dateFormat }}</span>
               <span class="icon" v-else><van-icon name="success" size="10" color="#fff" /></span>
             </dt>
             <dd class="week">{{ date.week }}</dd>
@@ -37,73 +37,68 @@ export default {
 
 <script setup lang="ts">
 import navBox from '@/components/navBox.vue';
-import { NavBar, Icon as vanIcon } from 'vant';
+import { NavBar, Icon as vanIcon, showToast } from 'vant';
 import { zeroReplenish } from '@/assets/js/public';
 // @ts-ignore
 import { RouterLink, useRouter } from 'vue-router';
-import { reactive } from 'vue';
+import { ref, reactive, onMounted } from 'vue';
+
+import { signinInfo, completionSignin } from '@/api/signIn';
 
 const router = useRouter(); // 路由对象
 
-/* 计算签到日历 */
-const calculateSignInCalendar = ():any[] => {
-  let dateData = [{
-    val: '+2',
-    date: '02.29',
-    week: '周一',
-    finishState: true
-  },{
-    val: '+2',
-    date: '02.29',
-    week: '周二',
-    finishState: false
-  },{
-    val: '+3',
-    date: '02.29',
-    week: '周三',
-    finishState: false
-  },{
-    val: '+3',
-    date: '02.29',
-    week: '周四',
-    finishState: false
-  },{
-    val: '+3',
-    date: '02.29',
-    week: '周五',
-    finishState: false
-  },{
-    val: '+3',
-    date: '02.29',
-    week: '周六',
-    finishState: false
-  },{
-    val: '+3',
-    date: '02.29',
-    week: '周日',
-    finishState: false
-  }];
-  let currentTime = new Date(); // 当前时间
-  let currentTimeSunday = currentTime.getDay() != 0 ? currentTime.getDay() : 7; // 今天星期几
-  /* 开始日期 */
-  let startTime = new Date(currentTime.getTime() - (currentTimeSunday - 1) * 24 * 60 * 60 * 1000);
-  for (let i = 0; i < 7; i++) {
-    let calculateTime = new Date(startTime.getTime() + i * 24 * 60 * 60 * 1000);
-    dateData[i].date = zeroReplenish(calculateTime.getMonth() + 1) + '.' + zeroReplenish(calculateTime.getDate())
-  }
-  return dateData
+let dateData = reactive([]); // 生成签到日历
+let addWeekIntegral = ref(0); // 一周的累计积分
+let continuityDayQuantity = ref(0); // 连续签到天数
+
+/**
+ * 获取签到记录
+*/
+function signinRecord() {
+  signinInfo().then((res: any) => {
+    if (res.code == 0) {
+      addWeekIntegral.value = 0;
+      let signinDayQuantity = 0; 
+      let currentTime = new Date(res.data.day_date).getTime();
+      res.data.weeks.forEach((item:any) => {
+        item['dateFormat'] = item.date.slice(5, item.date.length).replaceAll('-', '.');
+        addWeekIntegral.value = addWeekIntegral.value + item.score;
+        if (item.score > 0) {
+          signinDayQuantity++
+        } else {
+          if (currentTime >= new Date(item.date).getTime()) {
+            signinDayQuantity = 0;
+          }
+        }
+      })
+      continuityDayQuantity.value = signinDayQuantity;
+      Object.assign(dateData, res.data.weeks)
+    }
+  })
 }
 
-let dateData = reactive(calculateSignInCalendar()); // 生成签到日历
-/* 完成签到 */
+/**
+ * 完成签到
+*/
 const fulfilSignIn = ():void => {
-  console.log('完成签到');
+  completionSignin().then((res: any) => {
+    if (res.code == 0) {
+      showToast('签到成功!')
+      signinRecord();
+    }
+  })
 }
 
 /* 返回上一页面 */
 const pageReturn = ():void => {
   router.go(-1);
 }
+
+
+/* 创建完成 */
+onMounted(() => {
+  signinRecord(); // 获取签到记录
+})
 
 </script>
 
@@ -231,6 +226,9 @@ const pageReturn = ():void => {
         }
       }
     }
+  }
+  :deep(.van-hairline--bottom:after) {
+    border-bottom-width: inherit;
   }
 }
 </style>

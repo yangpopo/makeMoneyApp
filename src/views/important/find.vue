@@ -9,13 +9,13 @@
         <div class="box">
           <dl>
             <dt>昨日预估收益:</dt>
-            <dd>金额<b>¥0</b></dd>
-            <dd>积分<b>0</b></dd>
+            <dd>金额<b>¥{{ currencyFormat(moneyIntegralData.earningsRecordData.ye_money) }}</b></dd>
+            <dd>积分<b>{{ moneyIntegralData.earningsRecordData.ye_score }}</b></dd>
           </dl>
           <dl>
             <dt>待结算收益: <img class="icon-tip" src="@/assets/image/find/tip.png" alt="" @click="openIncomeTip"></dt>
-            <dd>金额<b>¥0.00</b></dd>
-            <dd>积分<b>0.00</b></dd>
+            <dd>金额<b>¥{{ currencyFormat(moneyIntegralData.earningsRecordData.all_money) }}</b></dd>
+            <dd>积分<b>{{ moneyIntegralData.earningsRecordData.all_score }}</b></dd>
           </dl>
         </div>
         <RouterLink :to="{ name: 'accountDetails' }" class="view-but">查看</RouterLink>
@@ -30,20 +30,22 @@
           <div class="chart-box">
             <span class="title">进度</span>
             <div class="schedule-box">
-              <span class="figure"></span>
-              <span class="val">0/80</span>
+              <span class="figure" :style="{ width: (moneyIntegralData.taskRecordData.curr_times/moneyIntegralData.taskRecordData.max_times) * 100 + '%' }"></span>
+              <span class="val">{{ moneyIntegralData.taskRecordData.curr_times }}/{{ moneyIntegralData.taskRecordData.max_times }}</span>
             </div>
           </div>
-          <div class="number-box"><img class="icon-tip" src="@/assets/image/find/count.png" alt="" @click="openBrowseTip">当日有效浏览:<b class="val">0</b></div>
+          <div class="number-box"><img class="icon-tip" src="@/assets/image/find/count.png" alt=""
+              @click="openBrowseTip">当日有效浏览:<b class="val">{{ moneyIntegralData.taskRecordData.valid_times }}</b></div>
         </div>
-        <div class="go-lucrative">去赚钱</div>
+        <div class="go-lucrative" @click="skipAd">去赚钱</div>
       </div>
     </div>
     <overlayBox ref="rulePopupRef">
       <div class="rule-box" @click.stop>
         <img class="icon-logo" src="@/assets/image/find/logo.png" alt="">
         <h1 class="title">规则</h1>
-        <div class="content-box">asdfasdfasdfasdfasdfasdfasdfasdfsadfasdf阿斯顿发生大区分啥地方阿斯顿发送到发阿斯顿发送到发阿斯顿发是打发斯蒂芬阿斯顿发送到发阿斯顿发送到发沙发as</div>
+        <div class="content-box">
+          asdfasdfasdfasdfasdfasdfasdfasdfsadfasdf阿斯顿发生大区分啥地方阿斯顿发送到发阿斯顿发送到发阿斯顿发是打发斯蒂芬阿斯顿发送到发阿斯顿发送到发沙发as</div>
         <div class="close-but" @click="isShowRule(false)">我知道了</div>
       </div>
     </overlayBox>
@@ -60,9 +62,28 @@ export default {
 import navBox from '@/components/navBox.vue';
 import overlayBox from '@/components/overlayBox.vue';
 import { NavBar, showToast } from 'vant';
+import { moneyFormat } from '@/assets/js/public';
 // @ts-ignore
-import { RouterLink, RouterView} from 'vue-router';
-import { ref } from 'vue'
+import { RouterLink } from 'vue-router';
+import { ref, reactive, onMounted, onBeforeUnmount } from 'vue'
+import { useRouter } from 'vue-router';
+import { taskRecord, adMakeMoney } from '@/api/ad'
+import {useUserInfo} from '@/stores/userInfo'
+import {useMoneyIntegral} from '@/stores/moneyIntegral'
+
+const userInfoData = useUserInfo();
+
+const moneyIntegralData = useMoneyIntegral();
+
+
+const router = useRouter(); /* 路由对象 */
+
+/**
+ * 优化货比格式
+*/
+function currencyFormat(val: number | string): string {
+  return moneyFormat(val)
+}
 
 /* 打开收益提示 */
 const openIncomeTip = () => {
@@ -79,6 +100,58 @@ let rulePopupRef = ref(); // 规则组件
 const isShowRule = (val: boolean) => {
   rulePopupRef.value.isShow = val;
 }
+
+/* 跳转页面 */
+const skiPage = (name: string):void => {
+  router.push({name})
+}
+
+
+
+/**
+ * 跳转广告
+*/
+function skipAd() {
+  adMakeMoney().then((res: any) => {
+    if (res.code == 0) {
+      document.addEventListener('visibilitychange', monitorPageIsShow);
+      console.log(userInfoData.token, userInfoData.userInfo.user_id);
+      toSystemActivity.toActivity([userInfoData.token, userInfoData.userInfo.user_id]);
+      console.log('跳转广告页面!');
+    }
+  })
+}
+
+/**
+ * 监听页面显示隐藏
+*/
+const monitorPageIsShow = () => {
+  if (document.visibilityState === 'hidden') {
+    console.log('窗口->隐藏');
+  } else if (document.visibilityState === 'visible') {
+    console.log('窗口->可见');
+    // 获取任务进度
+    taskRecord().then((res:any) => {
+      if (res.code == 0){
+        Object.assign(moneyIntegralData.taskRecordData, res.data);
+      }
+    })
+
+  }
+}
+
+/**
+ * 创建完成
+*/
+onMounted(() => {
+  
+})
+/**
+ * 销毁前
+*/
+onBeforeUnmount(() => {
+  document.removeEventListener('visibilitychange', monitorPageIsShow);
+})
 </script>
 
 <style lang="scss" scoped>
@@ -87,6 +160,7 @@ const isShowRule = (val: boolean) => {
     width: 100%;
     height: 22vw;
   }
+
   .main {
     width: 100vw;
     height: calc(100% - 22vw);
@@ -94,6 +168,7 @@ const isShowRule = (val: boolean) => {
     box-sizing: border-box;
     padding: 5vw;
   }
+
   .income-box {
     width: 100%;
     background-color: #fff;
@@ -102,7 +177,8 @@ const isShowRule = (val: boolean) => {
     padding: 5vw;
     border-radius: 3vw;
     margin-bottom: 6vw;
-    .box{
+
+    .box {
       width: 100%;
       box-sizing: border-box;
       padding: 3.5vw 5vw;
@@ -112,8 +188,10 @@ const isShowRule = (val: boolean) => {
       justify-content: space-between;
       align-items: flex-start;
       margin-bottom: 3vw;
+
       dl {
         width: 50%;
+
         dt {
           font-size: 4vw;
           font-weight: bold;
@@ -121,6 +199,7 @@ const isShowRule = (val: boolean) => {
           color: #000;
           display: flex;
           align-items: center;
+
           .icon-tip {
             width: 4vw;
             height: 4vw;
@@ -128,10 +207,12 @@ const isShowRule = (val: boolean) => {
             margin-left: 2vw;
           }
         }
+
         dd {
           font-size: 4vw;
           line-height: 8vw;
           color: rgb(164, 164, 164);
+
           b {
             font-size: 4.3vw;
             font-weight: bold;
@@ -141,6 +222,7 @@ const isShowRule = (val: boolean) => {
         }
       }
     }
+
     .view-but {
       display: block;
       margin-left: auto;
@@ -154,12 +236,14 @@ const isShowRule = (val: boolean) => {
       text-align: center;
     }
   }
+
   .title-h1 {
     width: 100%;
     font-size: 5vw;
     font-weight: bold;
     margin-bottom: 6vw;
   }
+
   .task-box {
     width: 100%;
     background-color: #fff;
@@ -168,17 +252,20 @@ const isShowRule = (val: boolean) => {
     padding: 5vw;
     border-radius: 3vw;
     margin-bottom: 6vw;
+
     .title-h1 {
       width: 100%;
       font-size: 4.2vw;
       line-height: 8vw;
     }
+
     .title-h2 {
       width: 100%;
       font-size: 3.5vw;
       color: rgb(142, 142, 142);
       line-height: 8vw;
     }
+
     .schedule {
       width: 100%;
       box-sizing: border-box;
@@ -186,22 +273,27 @@ const isShowRule = (val: boolean) => {
       padding: 4vw;
       border-radius: 3vw;
       margin-bottom: 4vw;
+
       .chart-box {
         width: 100%;
         display: flex;
         align-items: center;
         margin-bottom: 3vw;
+
         >.title {
           font-size: 3.5vw;
           margin-right: 2vw;
         }
+
         >.schedule-box {
           width: calc(100% - 9vw);
           height: 4.5vw;
           position: relative;
           background-color: rgb(190, 190, 190);
           border-radius: 3vw;
-          .figure{
+          overflow: hidden;
+
+          .figure {
             position: absolute;
             width: 20%;
             height: 4.5vw;
@@ -211,6 +303,7 @@ const isShowRule = (val: boolean) => {
             left: 0;
             transform: translateY(-50%);
           }
+
           .val {
             position: absolute;
             top: 50%;
@@ -222,18 +315,21 @@ const isShowRule = (val: boolean) => {
           }
         }
       }
-      .number-box{
+
+      .number-box {
         margin-left: auto;
         display: flex;
         align-items: center;
         justify-content: flex-end;
         font-size: 3.5vw;
         font-weight: bolder;
+
         >.icon-tip {
           width: 3.5vw;
           height: 3.5vw;
           margin-right: 2vw;
         }
+
         >.val {
           font-size: 3.5vw;
           font-weight: bold;
@@ -241,7 +337,8 @@ const isShowRule = (val: boolean) => {
         }
       }
     }
-    .go-lucrative{
+
+    .go-lucrative {
       width: 100%;
       box-sizing: border-box;
       background-color: rgb(0, 52, 239);
@@ -254,61 +351,67 @@ const isShowRule = (val: boolean) => {
     }
   }
 }
+
 .rule-box {
-    position: absolute;
-    top: 57%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 85vw;
-    height: 120vw;
-    background-color: #fff;
+  position: absolute;
+  top: 57%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 85vw;
+  height: 120vw;
+  background-color: #fff;
+  box-sizing: border-box;
+  padding: 5vw 5vw 5vw 5vw;
+  border-radius: 5vw;
+
+  .icon-logo {
+    width: 29vw;
+    height: 33.5vw;
+    margin: -18vw auto 5vw auto;
+    display: block;
+  }
+
+  .title {
+    width: 100%;
+    text-align: center;
+    font-size: 5vw;
+    color: #000;
+    position: relative;
     box-sizing: border-box;
-    padding: 5vw 5vw 5vw 5vw;
-    border-radius: 5vw;
-    .icon-logo {
-      width: 29vw;
-      height: 33.5vw;
-      margin: -18vw auto 5vw auto;
-      display: block;
-    }
-    .title {
-      width: 100%;
-      text-align: center;
-      font-size: 5vw;
-      color: #000;
-      position: relative;
-      box-sizing: border-box;
-      padding-bottom: 4vw;
-      margin-bottom: 3vw;
-      &:before {
-        content: "";
-        position: absolute;
-        width: 8vw;
-        height: 0.5vw;
-        background-color: rgb(233, 233, 233);
-        left: 50%;
-        bottom: 0;
-        transform: translateX(-50%);
-      }
-    }
-    .content-box {
-      width: 100%;
-      height: 60vw;
-      background-color: aqua;
-      overflow-y: auto;
-      font-size: 3.5vw;
-      line-height: 5vw;
-      margin-bottom: 5vw;
-    }
-    .close-but {
-      font-size: 4vw;
-      color: #fff;
-      background-color: rgb(0, 52, 239);
-      padding: 3vw 5vw;
-      text-align: center;
-      width: 40vw;
-      margin: 0 auto;
-      border-radius: 3vw;
+    padding-bottom: 4vw;
+    margin-bottom: 3vw;
+
+    &:before {
+      content: "";
+      position: absolute;
+      width: 8vw;
+      height: 0.5vw;
+      background-color: rgb(233, 233, 233);
+      left: 50%;
+      bottom: 0;
+      transform: translateX(-50%);
     }
   }
+
+  .content-box {
+    width: 100%;
+    height: 60vw;
+    background-color: aqua;
+    overflow-y: auto;
+    font-size: 3.5vw;
+    line-height: 5vw;
+    margin-bottom: 5vw;
+  }
+
+  .close-but {
+    font-size: 4vw;
+    color: #fff;
+    background-color: rgb(0, 52, 239);
+    padding: 3vw 5vw;
+    text-align: center;
+    width: 40vw;
+    margin: 0 auto;
+    border-radius: 3vw;
+  }
+}
 </style>

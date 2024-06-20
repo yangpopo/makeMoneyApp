@@ -1,0 +1,1 @@
+import{_ as o,o as n,c as s,D as a}from"./index-BHC9SGJp.js";const t={},c={class:"nav-box"};function r(e,d){return n(),s("div",c,[a(e.$slots,"default",{},void 0,!0)])}const f=o(t,[["render",r],["__scopeId","data-v-1dda9d2a"]]);export{f as n};

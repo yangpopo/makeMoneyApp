@@ -1,21 +1,18 @@
 <template>
-  <!-- 财产模块 -->
   <div class="property-box">
+    <!-- 财产模块 -->
     <div class="property-info">
       <dl class="money item">
         <dt>账户余额(元)</dt>
-        <dd><b class="val">¥0.00</b><RouterLink :to="{ name: 'accountDetails' }" class="operate-but">提现</RouterLink></dd>
+        <dd><b class="val">¥{{ currencyFormat(moneyIntegralData.money) }}</b><RouterLink :to="{ name: 'accountDetails' }" class="operate-but">提现</RouterLink></dd>
       </dl>
       <dl class="integral item">
         <dt>账户积分</dt>
-        <dd><b class="val">0</b><span class="operate-but">使用</span></dd>
+        <dd><b class="val">{{ moneyIntegralData.score }}</b><span class="operate-but">使用</span></dd>
       </dl>
     </div>
     <swipe class="ad-swipe" :autoplay="3000" indicator-color="white">
-      <swipe-item>1</swipe-item>
-      <swipe-item>2</swipe-item>
-      <swipe-item>3</swipe-item>
-      <swipe-item>4</swipe-item>
+      <swipe-item><img class="ad-swipe-item" src="@/assets/image/campus/ad-cover.png" alt="" /></swipe-item>
     </swipe>
   </div>
 </template>
@@ -28,11 +25,28 @@ export default {
 
 <script setup lang="ts">
 // @ts-ignore
-import { Swipe, SwipeItem, showToast } from 'vant';
+import { Swipe, SwipeItem, showToast, RollingText as vanRollingText } from 'vant';
 // @ts-ignore
-import { ref } from 'vue'
+import { reactive, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
 
+import { moneyFormat } from '@/assets/js/public'
+import { useMoneyIntegral } from '@/stores/moneyIntegral'
+
+
+const moneyIntegralData = useMoneyIntegral()
+
+/**
+ * 优化货比格式
+*/
+function currencyFormat(val:number | string): string {
+  return moneyFormat(val)
+}
+
+
+/* 创建完成 */
+onMounted(() => {
+})
 </script>
 
 <style lang="scss" scoped>
@@ -87,9 +101,13 @@ import { RouterLink } from 'vue-router'
   }
   .ad-swipe {
     width: 100%;
-    background-color: aqua;
     border-radius: 3vw;
     height: 40vw;
+    .ad-swipe-item {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
   }
 }
 </style>

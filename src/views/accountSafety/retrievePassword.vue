@@ -19,12 +19,12 @@
         <span class="count-down" v-else>{{ codeState.countDown }}s</span>
       </div>
       <div class="input-password-box">
-        <input class="input-obj" maxlength="20" :type="isShowPassword ? 'password' : 'text'" placeholder="请输入新密码(8~20位数字和字母)" >
+        <input class="input-obj" maxlength="16" :type="isShowPassword ? 'password' : 'text'" placeholder="请输入新密码(8~20位数字和字母)" >
         <van-icon v-if="isShowPassword == false" name="eye-o" color="#c0c0c0" size="5vw" @click="isShowPassword = true"/>
         <van-icon v-else name="closed-eye" color="#c0c0c0" size="5vw" @click="isShowPassword = false"/>
       </div>
       <div class="input-password-box">
-        <input class="input-obj" maxlength="20" :type="isShowRepetitionPassword ? 'password' : 'text'" placeholder="请重复输入新密码" >
+        <input class="input-obj" maxlength="16" :type="isShowRepetitionPassword ? 'password' : 'text'" placeholder="请重复输入新密码" >
         <van-icon v-if="isShowRepetitionPassword == false" name="eye-o" color="#c0c0c0" size="5vw" @click="isShowRepetitionPassword = true"/>
         <van-icon v-else name="closed-eye" color="#c0c0c0" size="5vw" @click="isShowRepetitionPassword = false"/>
       </div>

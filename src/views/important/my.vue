@@ -2,11 +2,11 @@
   <div class="my">
     <div class="head-box">
       <div class="user-box">
-        <van-image class="head-img" width="15vw" height="15vw" fit="cover" position="center" round src="@/assets/image/my/default-head.png" />
+        <van-image class="head-img" width="15vw" height="15vw" fit="cover" position="center" round src="./static/image/default-avatar.png" />
         <dl class="user-info">
-          <dt>名字名字<span class="icon-sex"><svg class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="412"><path d="M795.189333 176.917333H682.666667a32 32 0 1 1 0-64h192a32 32 0 0 1 32 32v192a32 32 0 1 1-64 0V219.946667l-105.866667 105.866666A350.613333 350.613333 0 0 1 821.333333 554.666667c0 194.4-157.6 352-352 352S117.333333 749.066667 117.333333 554.666667s157.6-352 352-352a350.538667 350.538667 0 0 1 221.6 78.506666l104.256-104.256zM469.333333 842.666667c159.061333 0 288-128.938667 288-288S628.394667 266.666667 469.333333 266.666667 181.333333 395.605333 181.333333 554.666667s128.938667 288 288 288z" p-id="413"></path></svg></span>
-          <span class="icon-sex"><svg class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1524"><path d="M485.333333 768v-43.765333C321.077333 710.688 192 573.088 192 405.333333 192 228.597333 335.264 85.333333 512 85.333333c176.736 0 320 143.264 320 320 0 164.106667-123.52 299.349333-282.666667 317.845334V768H640a32 32 0 0 1 0 64h-90.666667v77.333333a32 32 0 0 1-64 0V832H384a32 32 0 0 1 0-64h101.333333zM512 661.333333c141.386667 0 256-114.613333 256-256S653.386667 149.333333 512 149.333333 256 263.946667 256 405.333333s114.613333 256 256 256z" p-id="1525"></path></svg></span></dt>
-          <dd>手机号:1334*****464</dd>
+          <dt>{{ userInfoData.userInfo?.username }}<span class="icon-sex" v-if="userInfoData.userInfo?.sex == 1"><svg class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="412"><path d="M795.189333 176.917333H682.666667a32 32 0 1 1 0-64h192a32 32 0 0 1 32 32v192a32 32 0 1 1-64 0V219.946667l-105.866667 105.866666A350.613333 350.613333 0 0 1 821.333333 554.666667c0 194.4-157.6 352-352 352S117.333333 749.066667 117.333333 554.666667s157.6-352 352-352a350.538667 350.538667 0 0 1 221.6 78.506666l104.256-104.256zM469.333333 842.666667c159.061333 0 288-128.938667 288-288S628.394667 266.666667 469.333333 266.666667 181.333333 395.605333 181.333333 554.666667s128.938667 288 288 288z" p-id="413"></path></svg></span>
+          <span class="icon-sex" v-else-if="userInfoData.userInfo?.sex == 0"><svg class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1524"><path d="M485.333333 768v-43.765333C321.077333 710.688 192 573.088 192 405.333333 192 228.597333 335.264 85.333333 512 85.333333c176.736 0 320 143.264 320 320 0 164.106667-123.52 299.349333-282.666667 317.845334V768H640a32 32 0 0 1 0 64h-90.666667v77.333333a32 32 0 0 1-64 0V832H384a32 32 0 0 1 0-64h101.333333zM512 661.333333c141.386667 0 256-114.613333 256-256S653.386667 149.333333 512 149.333333 256 263.946667 256 405.333333s114.613333 256 256 256z" p-id="1525"></path></svg></span></dt>
+          <!-- <dd>手机号:1334*****464</dd> -->
         </dl>
       </div>
       <div class="operate-but">
@@ -18,11 +18,11 @@
       <div class="account-box" @click="skiPage('accountDetails')">
         <dl>
           <dt>我的账户</dt>
-          <dd>¥0.00</dd>
+          <dd>¥{{ currencyFormat(moneyIntegralData.money) }}</dd>
         </dl>
         <dl>
           <dt>我的积分</dt>
-          <dd>0.00</dd>
+          <dd>{{ moneyIntegralData.score }}</dd>
         </dl>
       </div>
       <div class="project-box">
@@ -77,7 +77,7 @@
             <div class="title">隐私条例</div>
           </div>
           <div class="item-box">
-            <img class="icon" src="@/assets/image/my/icon-04.png" alt="">
+            <img class="icon" @click="skiPage('checkUpdates')" src="@/assets/image/my/icon-04.png" alt="">
             <div class="title">检测更新</div>
           </div>
         </div>
@@ -96,10 +96,28 @@ export default {
 <script setup lang="ts">
 // @ts-ignore
 import { ref, reactive } from 'vue';
+import { storeToRefs } from 'pinia'
 import { RouterLink, useRouter} from 'vue-router';
 import { Image as VanImage, ActionSheet as VanActionSheet } from 'vant';
+import { moneyFormat } from '@/assets/js/public';
+import { useUserInfo } from '@/stores/userInfo';
+import { useMoneyIntegral } from '@/stores/moneyIntegral';
+
+/* 用户信息 */
+const userInfoData = useUserInfo()
+/* 钱信息 */
+const moneyIntegralData = useMoneyIntegral();
 
 const router = useRouter(); /* 路由对象 */
+
+
+/**
+ * 优化货比格式
+*/
+function currencyFormat(val:number | string): string {
+  return moneyFormat(val)
+}
+
 /* 跳转页面 */
 const skiPage = (name: string):void => {
   router.push({name})
@@ -112,12 +130,18 @@ const setMenuData = reactive([
   { name: '个人资料', routeName:'userInfo' },
   { name: '账号安全', routeName:'accountSafety' },
   { name: '隐私条例', routeName:'privacyPolicy' },
+  { name: '退出', routeName:'exit' },
 ]);
 
 /* 选中设置菜单 */
 const selectSetMenu = (data: any): void => {
-  console.log(data);
-  if (data?.routeName) {
+  if (data?.routeName == 'exit') {
+    // 清除token和用户信息
+    userInfoData.updateToken('');
+    userInfoData.updateUserInfo('');
+    moneyIntegralData.resetMoneyIntegral(0);
+    router.replace({name: 'logon', query: { parentName: 'my' }})
+  } else if (data?.routeName) {
     skiPage(data.routeName)
   }
   isShowSet.value = false;

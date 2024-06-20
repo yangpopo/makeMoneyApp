@@ -5,19 +5,19 @@
       </NavBar>
     </navBox>
     <div class="container-box">
-      <input class="input-password-obj" v-model="phone" type="password" placeholder="请输入旧密码" maxlength="20" />
+      <input class="input-password-obj" v-model="formData.pw" type="password" placeholder="请输入旧密码" maxlength="16" />
       <div class="input-password-box">
-        <input class="input-obj" maxlength="20" :type="isShowPassword ? 'password' : 'text'" placeholder="请输入新密码(8~20位数字和字母)" >
+        <input class="input-obj" maxlength="16" v-model="formData.password" :type="isShowPassword ? 'password' : 'text'" placeholder="请输入新密码(8~20位数字和字母)" >
         <van-icon v-if="isShowPassword == false" name="eye-o" color="#c0c0c0" size="5vw" @click="isShowPassword = true"/>
         <van-icon v-else name="closed-eye" color="#c0c0c0" size="5vw" @click="isShowPassword = false"/>
       </div>
       <div class="input-password-box">
-        <input class="input-obj" maxlength="20" :type="isShowRepetitionPassword ? 'password' : 'text'" placeholder="请重复输入新密码" >
+        <input class="input-obj" maxlength="16" v-model="formData.passwordRepetition" :type="isShowRepetitionPassword ? 'password' : 'text'" placeholder="请重复输入新密码" >
         <van-icon v-if="isShowRepetitionPassword == false" name="eye-o" color="#c0c0c0" size="5vw" @click="isShowRepetitionPassword = true"/>
         <van-icon v-else name="closed-eye" color="#c0c0c0" size="5vw" @click="isShowRepetitionPassword = false"/>
       </div>
       <RouterLink class="retrieve-password" :to="{name: 'retrievePasswordSafety'}">忘记旧密码?</RouterLink>
-      <div class="confirm-modify-but" @click="saveNewPhone">确定</div>
+      <div class="confirm-modify-but" @click="saveNewPassword">确定</div>
       
     </div>
   </div>
@@ -33,10 +33,24 @@ import { RouterLink } from 'vue-router';
 
 import { NavBar, Icon as vanIcon, showToast, CellGroup as vanCellGroup,  Cell as vanCell } from 'vant';
 
-
 // @ts-ignore
 import { ref, reactive } from 'vue';
 import { useRouter } from 'vue-router';
+
+import { changePassword } from '@/api/userAccount';
+
+
+/* 表单数据 */
+interface useFormData {
+  pw: string;
+  password: string;
+  passwordRepetition: string;
+}
+const formData = reactive<useFormData>({
+  pw: '',
+  password: '',
+  passwordRepetition: ''
+})
 
 /* 返回上一页面 */
 const pageReturn = ():void => {
@@ -55,54 +69,27 @@ let isShowPassword = ref(true);
 let isShowRepetitionPassword = ref(true);
 
 
-/* 获取code状态 */
-let codeState = reactive({
-  isSendCode: false, // 是否发送了code
-  countDown: 60, // 倒计时值
-})
-
-/* 手机号 */
-let phone = ref('');
-
-/* 获取验证码 */
-const getCode = ():void => {
-  codeState.isSendCode = true;
-  /* 校验手机号 */
-  const phoneReg = /^1[2,3,4,5,6,7,8,9][0-9]{9}$/; // 手机号正则
-  if (!phoneReg.test(phone.value)) {
-    showToast('请输入正确的手机号!')
-    return
-  }
-  codeCountDown(); // 开始倒计时
-}
-
-/* 验证码倒计时 */
-let codeCountDownObj:number;
-const codeCountDown = () => {
-  clearInterval(codeCountDownObj);
-  codeState.countDown -= 1;
-  codeCountDownObj = setInterval(() => {
-    codeState.countDown--;
-    if (codeState.countDown <= 0) {
-      codeState.countDown = 60;
-      clearInterval(codeCountDownObj)
-    }
-  }, 1000)
-}
-
-/**
- *  当期页面状态 1: 验证当期手机 2: 验证新手机
- */
-let currentPageState = ref(1);
-
-/* 去修改手机号 */
-const skipModifyPhone = () => {
-  currentPageState.value = 2;
-}
 
 /* 保存新手机号 */
-const saveNewPhone = () => {
-  pageReturn();
+const saveNewPassword = () => {
+  if (formData.pw.length < 6) {
+    showToast('请输入旧密码并不少于6位!')
+    return
+  }
+  if (formData.password.length < 6) {
+    showToast('请输入新密码并不少于6位!')
+    return
+  }
+  if (formData.password !== formData.passwordRepetition) {
+    showToast('两次密码不一致!')
+    return
+  }
+  changePassword(formData).then((res:any) => {
+    if (res.code == 0) {
+      showToast('密码修改成功');
+      pageReturn();
+    }
+  })
 }
 
 
