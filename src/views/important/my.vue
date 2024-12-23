@@ -104,7 +104,9 @@ import { useUserInfo } from '@/stores/userInfo';
 import { useMoneyIntegral } from '@/stores/moneyIntegral';
 
 /* 用户信息 */
-const userInfoData = useUserInfo()
+const userInfoData = useUserInfo();
+
+
 /* 钱信息 */
 const moneyIntegralData = useMoneyIntegral();
 

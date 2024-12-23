@@ -1,1 +1,0 @@
-import{d as s,o as e,l as a,w as t,u as o,a as c,t as r,v as _,R as l,_ as d}from"./index-DOklq4cR.js";const i={name:"callCenterIndex"},p=s({...i,setup(u){return(f,m)=>(e(),a(o(l),{class:"inlet-box"},{default:t(({Component:n})=>[c(_,{name:"ranimate"},{default:t(()=>[(e(),a(r(n)))]),_:2},1024)]),_:1}))}}),C=d(p,[["__scopeId","data-v-38c05938"]]);export{C as default};

@@ -6,8 +6,8 @@ const router = createRouter({
     {
       path: '/',
       name: 'inletPage',
-      // redirect: '/important/campus', // 重定向
-      redirect: '/important/campus', // 重定向
+      // redirect: '/important/find', // 重定向
+      redirect: '/important/find', // 重定向
       // @ts-ignore
       component: () => import('@/views/inletPage/inletPage.vue'),
       children:[]
@@ -15,7 +15,7 @@ const router = createRouter({
     {
       path: '/important',
       name: 'important',
-      redirect: '/important/campus', // 重定向
+      redirect: '/important/find', // 重定向
       // @ts-ignore
       component: () => import('@/views/important/important.vue'),
       children: [

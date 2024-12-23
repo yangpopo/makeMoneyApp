@@ -1,6 +1,6 @@
 <template>
   <div class="register">
-    <div class="title-h1">欢迎使用易赚</div>
+    <div class="title-h1">欢迎使用中联e家</div>
     <div class="phone input-box">
       <!-- <div class="code">+86</div> -->
       <input class="input-obj" v-model="accountData.phone" maxlength="11" readonly placeholder="请输入登录账号" type="text" @click="isShowNumberKeyboard = true">

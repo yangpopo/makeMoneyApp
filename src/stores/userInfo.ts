@@ -42,6 +42,8 @@ export const useUserInfo= defineStore('userInfo', () => {
    * @param userInfoVal userInfoVal值
   */
   function updateUserInfo(userInfoVal:UserInfo | string): void {
+    console.log('更新了用户信息:', userInfoVal);
+    
     if (<string>userInfoVal == '') {
       for (let key in userInfo) {
         userInfo[key] = '';
