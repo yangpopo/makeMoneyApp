@@ -51,10 +51,8 @@ const skiPage = (name: string):void => {
 
 /* 登录数据 */
 let logoData = reactive({
-  // username: 'test',
-  // password: '123456',
-  username: '',
-  password: '',
+  username: import.meta.env.VITE_ENV_VALUE == 'develop' ? 'test' : '',
+  password: import.meta.env.VITE_ENV_VALUE == 'develop' ? '123456' : '',
 });
 
 

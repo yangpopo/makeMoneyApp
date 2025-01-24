@@ -20,11 +20,11 @@ import { RouterView } from 'vue-router';
 <style lang="scss" scoped>
 // 进入
 .ranimate-enter-active {
-  animation: fadeInLeft 1s;
+  // animation: fadeInLeft 1s;
 }
 // 离开
 .ranimate-leave-active {
-  animation: fadeOutLeftBig 0.5s;
+  // animation: fadeOutLeftBig 0.5s;
 }
 
 .inlet-box {
