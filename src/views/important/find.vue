@@ -1,7 +1,8 @@
 <template>
   <div class="find">
     <navBox class="nav-box">
-      <nav-bar title="广告" right-text="规则" @click-right="isShowRule(true)" />
+      <!-- <nav-bar title="广告" right-text="规则" @click-right="isShowRule(true)" /> -->
+      <nav-bar title="广告"  />
     </navBox>
     <div class="main">
       <!-- 收益 -->
