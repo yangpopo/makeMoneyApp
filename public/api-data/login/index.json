@@ -1,0 +1,11 @@
+{
+  "code": 0,
+  "msg": "string",
+  "data": {
+    "user_info": {
+      "user_acc": "string",
+      "username": "string"
+    },
+    "token": "string"
+  }
+}
