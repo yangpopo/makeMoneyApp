@@ -1,0 +1,105 @@
+<template>
+  <div class="education-list">
+    <navBox class="nav-box">
+      <NavBar left-arrow title="课程详情" @click-left="pageReturn" right-text="收藏" @click-right="collectEducation">
+      </NavBar>
+    </navBox>
+    <!-- 下拉刷新上拉加载 -->
+    <PullRefresh class="container-box" v-model="refreshState" @refresh="onRefresh">
+      <List v-model:loading="loadingState" :finished="isFinished" finished-text="没有更多了" @load="onLoad" >
+        <courseDetailItem v-for="item in 20" :key="item" />
+      </List>
+    </PullRefresh>
+  </div>
+</template>
+
+<script lang="ts">
+export default {
+  name: 'educationList'
+}
+</script>
+
+<script setup lang="ts">
+import navBox from '@/components/navBox.vue';
+import courseDetailItem from './components/courseDetailItem.vue';
+import { NavBar, Icon as vanIcon, showToast, showSuccessToast, PullRefresh, List, Search as vanSearch, Checkbox as vanCheckbox } from 'vant';
+
+// @ts-ignore
+import { ref, reactive, onMounted } from 'vue';
+import { RouterLink, useRouter } from 'vue-router';
+
+
+const router = useRouter(); /* 路由对象 */
+
+/* 返回上一页面 */
+const pageReturn = (): void => {
+  router.go(-1);
+}
+
+/* 跳转页面 */
+const skiPage = (name: string): void => {
+  router.push({ name })
+}
+
+const isAdminPattern = ref(false); /* 是否管理模式 */
+
+/* 下拉刷新 */
+const refreshState = ref(false); // 加载状态
+const onRefresh = () => {
+  setTimeout(() => {
+    showSuccessToast('刷新成功');
+    refreshState.value = false;
+  }, 1000);
+};
+/* 上拉加载 */
+const loadingState = ref(false); // 加载状态
+const isFinished = ref(true); // 是否加载完成
+const onLoad = () => {
+  setTimeout(() => {
+    // showToast('加载成功');
+    loadingState.value = false;
+  }, 1000);
+};
+
+/**
+ * 收藏课程
+*/
+const collectEducation = () => {
+  console.log('收藏课程');
+}
+
+/**
+ * 创建完成
+*/
+onMounted(() => {
+  // courseTypePopupRef.value.isShow = true;
+  // console.log('26456464564564');
+})
+
+
+</script>
+
+<style lang="scss" scoped>
+.education-list {
+  width: 100vw;
+  min-height: 100vh;
+  // background-color: rgb(245, 245, 245);
+
+  background-color: #fff;
+  .nav-box {
+    width: 100%;
+
+    :deep(.van-hairline--bottom:after) {
+      border-bottom-width: inherit;
+    }
+  }
+
+  .container-box {
+    width: 100vw;
+    height: calc(100vh - 22.3vw );
+    overflow-y: auto;
+    box-sizing: border-box;
+    padding: 3vw 3vw;
+  }
+}
+</style>
